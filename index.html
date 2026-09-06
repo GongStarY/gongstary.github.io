@@ -66,7 +66,7 @@ a:hover{color:#fff;text-shadow:var(--glow-cyan)}
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   transition:opacity .6s ease,visibility .6s;
 }
-#boot-screen.hide{opacity:0;visibility:hidden}
+#boot-screen.hide{opacity:0;visibility:hidden;pointer-events:none}
 .boot-logo{
   font-family:'JetBrainsMono',monospace;color:var(--accent);
   font-size:1rem;letter-spacing:.3em;margin-bottom:2rem;
@@ -98,7 +98,36 @@ a:hover{color:#fff;text-shadow:var(--glow-cyan)}
   border-bottom:1px solid var(--rule);
   transition:padding .3s ease;
 }
-.nav-brand{font-family:'Tektur',sans-serif;font-weight:500;font-size:.95rem;letter-spacing:.18em;color:var(--accent);text-shadow:var(--glow-cyan)}
+.nav-brand{
+  font-family:'Tektur',sans-serif;font-weight:500;font-size:.95rem;letter-spacing:.18em;
+  color:var(--accent);text-shadow:var(--glow-cyan);
+}
+a.nav-brand{
+  display:inline-flex;align-items:center;gap:.45rem;
+  padding:.38rem .85rem .38rem .75rem;
+  color:var(--accent);
+  border:1px solid rgba(0,240,255,.4);
+  background:linear-gradient(135deg,rgba(0,240,255,.1),rgba(123,92,255,.08));
+  clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);
+  cursor:pointer;user-select:none;
+  transition:transform .18s ease,box-shadow .28s ease,border-color .28s ease,background .28s ease,color .28s ease;
+}
+a.nav-brand .brand-hint{
+  font-family:'JetBrainsMono',monospace;font-size:.58rem;letter-spacing:.14em;
+  color:var(--muted);text-transform:uppercase;
+}
+a.nav-brand:hover{
+  color:#fff;border-color:var(--accent);
+  background:linear-gradient(135deg,rgba(0,240,255,.22),rgba(123,92,255,.16));
+  box-shadow:var(--glow-cyan);transform:translateY(-2px);
+  text-shadow:var(--glow-cyan);
+}
+a.nav-brand:hover .brand-hint{color:var(--accent)}
+a.nav-brand:active{
+  transform:scale(.96) translateY(0);
+  box-shadow:0 0 14px rgba(0,240,255,.7),inset 0 0 12px rgba(0,240,255,.18);
+}
+a.nav-brand:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .nav-links{display:flex;gap:1.8rem;align-items:center}
 .nav-links a{
   font-family:'JetBrainsMono',monospace;font-size:.72rem;letter-spacing:.12em;
@@ -322,7 +351,7 @@ footer .ft-travel img{width:20px;height:20px}
 
 <!-- 顶部导航 -->
 <nav class="navbar">
-  <div class="nav-brand">KUNG_HSINYÜ</div>
+  <a href="cv/index.html" class="nav-brand" aria-label="打开个人简历">KUNG_HSINYÜ<span class="brand-hint">CV</span></a>
   <div class="nav-links">
     <a href="#politics">时政观察</a>
     <a href="#tech">技术札记</a>
@@ -464,6 +493,7 @@ footer .ft-travel img{width:20px;height:20px}
     <a href="#tech">技术札记</a>
     <a href="#essay">随笔小记</a>
     <a href="#games">桌游·设计</a>
+    <a href="cv/index.html">简历</a>
     <a href="#">关于</a>
     <a href="#">RSS</a>
   </div>

@@ -1,0 +1,521 @@
+<!-- Generated for KUNG Hsinyü station -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简历 // KUNG Hsinyü</title>
+<meta name="description" content="贡星宇 · 南开大学生命科学学院 / 香港科技大学（广州）系统枢纽">
+<style>
+@font-face { font-family:'Tektur'; src:url('../_shared/fonts/Tektur-Medium.ttf') format('truetype'); font-weight:500; font-style:normal; font-display:swap; }
+@font-face { font-family:'Tektur'; src:url('../_shared/fonts/Tektur-Regular.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:'JetBrainsMono'; src:url('../_shared/fonts/JetBrainsMono-Bold.ttf') format('truetype'); font-weight:700; font-style:normal; font-display:swap; }
+@font-face { font-family:'JetBrainsMono'; src:url('../_shared/fonts/JetBrainsMono-Regular.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:'Outfit'; src:url('../_shared/fonts/Outfit-Bold.ttf') format('truetype'); font-weight:700; font-style:normal; font-display:swap; }
+@font-face { font-family:'Outfit'; src:url('../_shared/fonts/Outfit-Regular.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+
+:root{
+  --bg:#05070f;
+  --bg2:#0b1020;
+  --bg3:#111830;
+  --ink:#e6f1ff;
+  --muted:#6b7a99;
+  --rule:#1a2845;
+  --accent:#00f0ff;
+  --accent2:#7b5cff;
+  --accent3:#ff2d75;
+  --glow-cyan:0 0 20px rgba(0,240,255,.45);
+  --glow-purple:0 0 20px rgba(123,92,255,.45);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif;
+  background:var(--bg);color:var(--ink);
+  overflow-x:hidden;line-height:1.7;
+}
+a{color:var(--accent);text-decoration:none;transition:color .3s}
+a:hover{color:#fff;text-shadow:var(--glow-cyan)}
+
+#particle-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.scanlines{
+  position:fixed;inset:0;z-index:9990;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,240,255,.025) 3px,rgba(0,0,0,0) 4px);
+  mix-blend-mode:overlay;opacity:.6;
+}
+.vignette{
+  position:fixed;inset:0;z-index:9989;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.7) 100%);
+}
+
+.navbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.9rem 2rem;
+  background:rgba(5,7,15,.8);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--rule);
+}
+a.nav-brand{
+  display:inline-flex;align-items:center;gap:.45rem;
+  font-family:'Tektur',sans-serif;font-weight:500;font-size:.95rem;letter-spacing:.18em;
+  padding:.38rem .85rem .38rem .75rem;
+  color:var(--accent);text-shadow:var(--glow-cyan);
+  border:1px solid rgba(0,240,255,.4);
+  background:linear-gradient(135deg,rgba(0,240,255,.1),rgba(123,92,255,.08));
+  clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);
+  cursor:pointer;user-select:none;
+  transition:transform .18s ease,box-shadow .28s ease,border-color .28s ease,background .28s ease,color .28s ease;
+}
+a.nav-brand .brand-hint{
+  font-family:'JetBrainsMono',monospace;font-size:.58rem;letter-spacing:.14em;
+  color:var(--muted);text-transform:uppercase;
+}
+a.nav-brand:hover{
+  color:#fff;border-color:var(--accent);
+  background:linear-gradient(135deg,rgba(0,240,255,.22),rgba(123,92,255,.16));
+  box-shadow:var(--glow-cyan);transform:translateY(-2px);
+}
+a.nav-brand:hover .brand-hint{color:var(--accent)}
+a.nav-brand:active{
+  transform:scale(.96);
+  box-shadow:0 0 14px rgba(0,240,255,.7),inset 0 0 12px rgba(0,240,255,.18);
+}
+.nav-links{display:flex;gap:1.8rem;align-items:center}
+.nav-links a{
+  font-family:'JetBrainsMono',monospace;font-size:.72rem;letter-spacing:.12em;
+  color:var(--muted);text-transform:uppercase;position:relative;padding:.2rem 0;
+}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:var(--accent);transition:width .3s}
+.nav-links a:hover{color:var(--accent)}
+.nav-links a:hover::after{width:100%}
+.nav-links a.active{color:var(--accent)}
+.nav-links a.active::after{width:100%}
+
+.wrap{position:relative;z-index:1;min-height:100vh}
+
+.cv-hero{
+  padding:8rem 2rem 2.2rem;
+  text-align:center;
+}
+.cv-hero .tag{
+  font-family:'JetBrainsMono',monospace;font-size:.72rem;
+  color:var(--accent);letter-spacing:.3em;text-transform:uppercase;
+  margin-bottom:1rem;
+}
+.cv-hero h1{
+  font-family:'Tektur',sans-serif;font-weight:500;
+  font-size:clamp(2rem,5vw,3.2rem);color:#fff;
+  letter-spacing:.06em;margin-bottom:.35rem;
+}
+.cv-hero .name-cn{
+  font-family:'Outfit',sans-serif;font-size:1.05rem;color:var(--muted);letter-spacing:.28em;
+}
+.cv-hero .rule{
+  width:60px;height:2px;margin:1.2rem auto 1.2rem;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+}
+.cv-contacts{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:.55rem 1.2rem;
+  font-family:'JetBrainsMono',monospace;font-size:.72rem;color:var(--muted);letter-spacing:.04em;
+}
+.cv-contacts a,.cv-contacts span{color:var(--ink)}
+.cv-contacts .sep{color:var(--rule)}
+
+.cv-shell{
+  max-width:1180px;margin:0 auto;
+  padding:1rem 2rem 4.5rem;
+  display:grid;grid-template-columns:220px 1fr;gap:2rem;
+  align-items:start;
+}
+
+.cv-sidebar{
+  position:sticky;top:5.4rem;
+  background:linear-gradient(145deg,rgba(11,16,32,.85),rgba(17,24,48,.55));
+  border:1px solid var(--rule);
+  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+  padding:1.15rem 1rem 1.25rem;
+}
+.sidebar-label{
+  font-family:'JetBrainsMono',monospace;font-size:.62rem;
+  color:var(--accent);letter-spacing:.22em;text-transform:uppercase;
+  margin-bottom:.75rem;
+}
+.track-list{display:flex;flex-direction:column;gap:.55rem;margin-bottom:1.2rem}
+.track-btn{
+  font-family:'JetBrainsMono',monospace;font-size:.72rem;letter-spacing:.1em;
+  text-align:left;width:100%;
+  padding:.55rem .7rem;
+  color:var(--muted);background:transparent;
+  border:1px solid var(--rule);cursor:pointer;
+  clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px);
+  transition:all .25s;
+}
+.track-btn:hover{border-color:rgba(0,240,255,.45);color:var(--accent)}
+.track-btn.active{
+  color:var(--bg);background:var(--accent);border-color:var(--accent);
+  box-shadow:var(--glow-cyan);
+}
+.track-hint{
+  font-size:.75rem;color:var(--muted);line-height:1.55;margin-bottom:1.15rem;
+}
+.toc{display:flex;flex-direction:column;gap:.45rem}
+.toc a{
+  font-family:'JetBrainsMono',monospace;font-size:.68rem;
+  color:var(--muted);letter-spacing:.06em;
+}
+.toc a:hover{color:var(--accent)}
+
+.cv-main{min-width:0}
+.cv-section{margin-bottom:1.6rem}
+.cv-section > h2{
+  font-family:'Tektur',sans-serif;font-size:1.15rem;color:#fff;
+  display:flex;align-items:center;gap:.7rem;margin-bottom:.9rem;
+}
+.cv-section > h2 .sec-tag{
+  font-family:'JetBrainsMono',monospace;font-size:.62rem;color:var(--accent);
+  letter-spacing:.18em;
+}
+.cv-section > h2::after{
+  content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--rule),transparent);
+}
+
+.cv-block{
+  background:linear-gradient(145deg,rgba(11,16,32,.72),rgba(17,24,48,.48));
+  border:1px solid var(--rule);
+  padding:1.15rem 1.25rem 1.15rem 1.35rem;
+  margin-bottom:.85rem;
+  position:relative;
+  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+  transition:border-color .3s,box-shadow .3s,transform .3s;
+}
+.cv-block::before{
+  content:'';position:absolute;top:0;left:0;width:3px;height:100%;
+  background:linear-gradient(180deg,var(--accent),var(--accent2));
+  opacity:.55;
+}
+.cv-block:hover{
+  border-color:rgba(0,240,255,.38);
+  box-shadow:0 6px 28px rgba(0,240,255,.08);
+}
+.cv-block[hidden]{display:none !important}
+
+.cv-block .meta{
+  display:flex;flex-wrap:wrap;gap:.35rem .8rem;align-items:baseline;
+  margin-bottom:.45rem;
+}
+.cv-block .role{
+  font-family:'Tektur',sans-serif;font-size:.98rem;color:#fff;
+}
+.cv-block .org{font-size:.86rem;color:var(--accent)}
+.cv-block .when{
+  font-family:'JetBrainsMono',monospace;font-size:.68rem;color:var(--muted);margin-left:auto;
+}
+.cv-block .sub{
+  font-size:.86rem;color:var(--muted);margin-bottom:.45rem;
+}
+.cv-block p.body{
+  font-size:.88rem;color:#c9d7ee;padding-left:.15rem;
+}
+.indent{
+  margin:.45rem 0 0 1rem;
+  padding-left:.9rem;
+  border-left:1px dashed rgba(0,240,255,.28);
+}
+.indent li{
+  list-style:none;font-size:.84rem;color:#c9d7ee;position:relative;
+  padding:.18rem 0 .18rem .15rem;
+}
+.indent li::before{
+  content:'▸';position:absolute;left:-1.05rem;color:var(--accent);font-size:.7rem;top:.32rem;
+}
+.skill-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.55rem}
+.chip{
+  font-family:'JetBrainsMono',monospace;font-size:.62rem;letter-spacing:.04em;
+  padding:.18rem .55rem;border:1px solid var(--rule);border-radius:3px;color:var(--muted);
+}
+.cv-block:hover .chip{border-color:rgba(0,240,255,.45);color:var(--accent)}
+
+.hl{
+  color:var(--accent);text-shadow:0 0 10px rgba(0,240,255,.25);
+}
+.hl2{color:#c4b5ff}
+.score{
+  font-family:'JetBrainsMono',monospace;color:var(--accent);
+  background:rgba(0,240,255,.08);border:1px solid rgba(0,240,255,.22);
+  padding:.02rem .35rem;border-radius:3px;font-size:.8em;
+}
+.gene{
+  font-family:'JetBrainsMono',monospace;font-size:.86em;color:#ff7aa8;
+}
+.award-grid{display:grid;gap:.55rem}
+.award{
+  display:grid;grid-template-columns:1fr auto auto;gap:.6rem;align-items:baseline;
+  font-size:.86rem;color:#c9d7ee;
+  padding:.45rem .2rem .45rem .15rem;
+  border-bottom:1px solid rgba(26,40,69,.8);
+}
+.award .lvl{
+  font-family:'JetBrainsMono',monospace;font-size:.62rem;color:var(--accent2);
+  letter-spacing:.08em;white-space:nowrap;
+}
+.award .yr{
+  font-family:'JetBrainsMono',monospace;font-size:.62rem;color:var(--muted);white-space:nowrap;
+}
+
+footer{
+  border-top:1px solid var(--rule);padding:2rem 2rem 1.5rem;text-align:center;
+  background:linear-gradient(180deg,transparent,rgba(11,16,32,.4));
+}
+footer .ft-copy{
+  font-family:'JetBrainsMono',monospace;font-size:.68rem;
+  color:var(--muted);letter-spacing:.1em;
+}
+footer .ft-copy .accent{color:var(--accent)}
+
+@media(max-width:900px){
+  .cv-shell{grid-template-columns:1fr;padding:1rem 1.2rem 3.5rem}
+  .cv-sidebar{position:static;top:auto}
+  .track-list{flex-direction:row;flex-wrap:wrap}
+  .track-btn{width:auto;flex:1;min-width:30%;text-align:center}
+  .toc{display:none}
+  .award{grid-template-columns:1fr;gap:.15rem}
+  .cv-block .when{margin-left:0}
+}
+@media(max-width:768px){
+  .navbar{padding:.7rem 1rem}
+  .nav-links a:not(.active){display:none}
+  .cv-hero{padding:6.4rem 1.2rem 1.6rem}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body data-cv-track="gen">
+
+<canvas id="particle-canvas"></canvas>
+<div class="scanlines"></div>
+<div class="vignette"></div>
+
+<div class="wrap">
+
+<nav class="navbar">
+  <a href="../index.html" class="nav-brand" aria-label="返回空间站首页">KUNG_HSINYÜ<span class="brand-hint">HOME</span></a>
+  <div class="nav-links">
+    <a href="../index.html#politics">时政观察</a>
+    <a href="../tech/index.html">技术札记</a>
+    <a href="./index.html" class="active">简历</a>
+    <a href="../index.html#games">桌游·设计</a>
+  </div>
+</nav>
+
+<header class="cv-hero">
+  <div class="tag">// PERSONNEL FILE</div>
+  <h1>KUNG Hsinyü</h1>
+  <div class="name-cn">贡星宇</div>
+  <div class="rule"></div>
+  <div class="cv-contacts">
+    <span>南开大学 · 生命科学学院</span>
+    <span class="sep">/</span>
+    <span>HKUST(GZ) · 系统枢纽</span>
+    <span class="sep">/</span>
+    <a href="tel:+8615189165282">+86 15189165282</a>
+    <span class="sep">/</span>
+    <a href="mailto:2011089@mail.nankai.edu.cn">2011089@mail.nankai.edu.cn</a>
+  </div>
+</header>
+
+<div class="cv-shell">
+
+  <!--
+    轨道接口：每个 .cv-block / .cv-section 可用 data-tracks="hw,gen,bio"
+    切换侧边栏时，不含当前轨道 id 的节点会被隐藏。
+    当前三套轨道先共用全文；之后只需改 data-tracks 或复制块并删减即可。
+  -->
+  <aside class="cv-sidebar">
+    <div class="sidebar-label">// CV TRACKS</div>
+    <div class="track-list" role="tablist" aria-label="简历版本">
+      <button type="button" class="track-btn" data-track="hw" role="tab" aria-selected="false">硬件向</button>
+      <button type="button" class="track-btn active" data-track="gen" role="tab" aria-selected="true">通用向</button>
+      <button type="button" class="track-btn" data-track="bio" role="tab" aria-selected="false">生物向</button>
+    </div>
+    <p class="track-hint" id="track-hint">面向软件、营销与综合岗位。后续可在此版本省略实验细节、突出组织与沟通经历。</p>
+    <nav class="toc">
+      <a href="#edu">01 教育背景</a>
+      <a href="#research">02 科研经历</a>
+      <a href="#campus">03 学生工作</a>
+      <a href="#volunteer">04 志愿实践</a>
+      <a href="#awards">05 奖学金及奖项</a>
+    </nav>
+  </aside>
+
+  <main class="cv-main">
+
+    <section class="cv-section" id="edu" data-tracks="hw,gen,bio">
+      <h2><span class="sec-tag">01</span>教育背景</h2>
+
+      <article class="cv-block" data-tracks="hw,gen,bio">
+        <div class="meta">
+          <span class="role">硕士研究生</span>
+          <span class="org">香港科技大学（广州） · 系统枢纽</span>
+          <span class="when">2024 — 2026</span>
+        </div>
+        <p class="body">跨学科系统训练，课题落在磁控纳米机器人与微流控检测接口。</p>
+      </article>
+
+      <article class="cv-block" data-tracks="hw,gen,bio">
+        <div class="meta">
+          <span class="role">本科</span>
+          <span class="org">南开大学 · 生命科学学院</span>
+          <span class="when">2020 — 2024</span>
+        </div>
+        <p class="body">学业水平 <span class="score">85.11 / 100</span>　GPA <span class="score">3.46 / 4.00</span>　CET6 <span class="score">602</span>　IELTS <span class="score">7.0</span></p>
+        <ul class="indent">
+          <li>核心课程：<span class="hl">神经生物学</span> (92)、<span class="hl">有机化学</span> (91)、<span class="hl">植物学</span> (91)、<span class="hl">药用植物分类学</span> (92)</li>
+          <li>实验课程：微生物学实验 (90)、动物学 (90)、遗传学实验 (88)</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="cv-section" id="research" data-tracks="hw,gen,bio">
+      <h2><span class="sec-tag">02</span>科研经历</h2>
+
+      <article class="cv-block" data-tracks="hw,gen,bio">
+        <div class="meta">
+          <span class="role">硕士毕业设计</span>
+          <span class="when">HKUST(GZ)</span>
+        </div>
+        <p class="sub">系统枢纽 · <span class="hl2">Ceren I. YASA</span> 课题组</p>
+        <p class="body">磁控生物纳米机器人：用生物抗体修饰纳米磁性微球表面，借助外界磁控系统实现尿样中目标<span class="hl">足细胞</span>的富集与测定。</p>
+        <ul class="indent">
+          <li>利用<span class="hl">磁控溅射</span>完成纳米机器人表层磁性镀层，并以 VSM、台阶仪表征</li>
+          <li>用紫外线<span class="hl">光刻</span>完成 PMMA <span class="hl">微流控芯片</span>的设计、表征与制造</li>
+          <li>qPCR、抗原抗体修饰，以及肾脏足细胞的诱导分化</li>
+        </ul>
+        <div class="skill-row">
+          <span class="chip">磁控溅射</span><span class="chip">VSM</span><span class="chip">光刻</span><span class="chip">微流控</span><span class="chip">qPCR</span>
+        </div>
+      </article>
+
+      <article class="cv-block" data-tracks="hw,gen,bio">
+        <div class="meta">
+          <span class="role">本科毕业设计</span>
+          <span class="when">南开大学</span>
+        </div>
+        <p class="sub">生物材料与组织工程系 · <span class="hl2">杨军</span>课题组 · 钙黏素基生物材料</p>
+        <p class="body">使用钙黏素基材料修饰的 <span class="hl">PLGA 微球</span>作为培养介质，调控间充质干细胞的干性及相关特性表达，优化扩增与分化能力。</p>
+        <div class="skill-row">
+          <span class="chip">生物材料</span><span class="chip">PLGA</span><span class="chip">干细胞</span>
+        </div>
+      </article>
+
+      <article class="cv-block" data-tracks="hw,gen,bio">
+        <div class="meta">
+          <span class="role">科研训练</span>
+          <span class="when">中科院生物物理所</span>
+        </div>
+        <p class="sub"><span class="hl2">李岩</span>课题组 · 限制性时间进食对果蝇寿命的影响机制</p>
+        <p class="body">采用限制性进食方案，调控果蝇节律基因（<span class="gene">clk</span> / <span class="gene">per</span> / <span class="gene">cyc</span> / <span class="gene">tim</span>）表达，进而引导下游自噬相关基因（<span class="gene">atg44</span>），促进细胞自噬及雌性寿命延长。</p>
+        <ul class="indent">
+          <li>参与节律缺陷果蝇杂交品系构建</li>
+          <li>果蝇幼虫显微注射</li>
+          <li>果蝇消化道解剖及免疫荧光验证</li>
+        </ul>
+        <div class="skill-row">
+          <span class="chip">果蝇遗传</span><span class="chip">显微注射</span><span class="chip">免疫荧光</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="cv-section" id="campus" data-tracks="hw,gen,bio">
+      <h2><span class="sec-tag">03</span>学生工作</h2>
+      <article class="cv-block" data-tracks="hw,gen,bio">
+        <ul class="indent" style="margin-top:0">
+          <li><span class="hl">香港科技大学（广州）龙舟队队长</span>　2024–2025 学年</li>
+          <li>南开大学生命科学学院学生科技协会主席　2022–2023 学年</li>
+          <li>南开大学生物强基班班长　2021–2022 学年</li>
+          <li>南开大学龙舟队组织委员　2020–2021 学年</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="cv-section" id="volunteer" data-tracks="hw,gen,bio">
+      <h2><span class="sec-tag">04</span>志愿服务及社会实践</h2>
+      <article class="cv-block" data-tracks="hw,gen,bio">
+        <ul class="indent" style="margin-top:0">
+          <li>第 54 届国际化学奥林匹克竞赛志愿者；南开生科百年院庆系列志愿活动</li>
+          <li>向阳计划泰和路小学支教项目「优秀支教实习教师」</li>
+          <li>北京「通风廊道」生态多样性调查调研员</li>
+          <li>第 14 届新领军者年会（2023 天津夏季达沃斯论坛）志愿者</li>
+          <li>社会志愿时长全年级第三</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="cv-section" id="awards" data-tracks="hw,gen,bio">
+      <h2><span class="sec-tag">05</span>奖学金及奖项</h2>
+      <article class="cv-block" data-tracks="hw,gen,bio">
+        <div class="award-grid">
+          <div class="award"><span>「蓝桥杯」电子赛省赛 <span class="hl">EDA 设计与开发</span> 大学组三等奖</span><span class="lvl">省级</span><span class="yr">2026</span></div>
+          <div class="award"><span>业余无线电 <span class="hl">B 级</span> 操作证书</span><span class="lvl">资质</span><span class="yr">2025</span></div>
+          <div class="award"><span>业余无线电 A 级操作证书</span><span class="lvl">资质</span><span class="yr">2023</span></div>
+          <div class="award"><span>南开大学 创新奖学金</span><span class="lvl">校级</span><span class="yr">2020–21</span></div>
+          <div class="award"><span>南开大学 文体奖学金</span><span class="lvl">校级</span><span class="yr">2021–22</span></div>
+          <div class="award"><span>南开大学 社会公益奖学金</span><span class="lvl">校级</span><span class="yr">2022–23</span></div>
+          <div class="award"><span>南开大学 「八六植生」助学金</span><span class="lvl">院级</span><span class="yr">2021–22</span></div>
+          <div class="award"><span>南开大学 「学习型宿舍」</span><span class="lvl">校级</span><span class="yr">2021–22</span></div>
+          <div class="award"><span>「潮起天开 龙腾海教」天津海河教育园区龙舟邀请赛商会组 冠军</span><span class="lvl">市级</span><span class="yr">2023</span></div>
+          <div class="award"><span>「中国银行杯」天津市第三届水上运动会龙舟大学生组 亚军</span><span class="lvl">省级</span><span class="yr">2021</span></div>
+          <div class="award"><span>「太力杯」中国（京山）十三届野生鸟类观鸟摄鸟大赛优秀队伍</span><span class="lvl">赛事</span><span class="yr">2023</span></div>
+        </div>
+      </article>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="ft-copy">© 2026 <span class="accent">KUNG Hsinyü</span> · PERSONNEL FILE · BUILT WITH OPEN WEB</div>
+</footer>
+
+</div>
+
+<script src="../assets/effects.js"></script>
+<script>
+(function () {
+  var hints = {
+    hw: '硬件 / 仪器方向：强调微纳加工、检测系统、EDA 与无线电资质。',
+    gen: '软件、营销与综合方向：强调跨学科训练、组织沟通与语言成绩。',
+    bio: '生物 / 医药方向：强调课题机制、实验技能与学术训练。'
+  };
+  var buttons = document.querySelectorAll('.track-btn');
+  var hint = document.getElementById('track-hint');
+  var nodes = document.querySelectorAll('[data-tracks]');
+
+  function applyTrack(track) {
+    document.body.setAttribute('data-cv-track', track);
+    if (hint) hint.textContent = hints[track] || '';
+    buttons.forEach(function (btn) {
+      var on = btn.getAttribute('data-track') === track;
+      btn.classList.toggle('active', on);
+      btn.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    nodes.forEach(function (el) {
+      var list = (el.getAttribute('data-tracks') || '').split(',').map(function (s) { return s.trim(); });
+      el.hidden = list.indexOf(track) === -1;
+    });
+    try { localStorage.setItem('cv-track', track); } catch (e) {}
+  }
+
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () { applyTrack(btn.getAttribute('data-track')); });
+  });
+
+  var saved = null;
+  try { saved = localStorage.getItem('cv-track'); } catch (e) {}
+  applyTrack(saved && hints[saved] ? saved : 'gen');
+})();
+</script>
+</body>
+</html>
