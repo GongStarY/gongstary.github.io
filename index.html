@@ -100,33 +100,46 @@ a:hover{color:#fff;text-shadow:var(--glow-cyan)}
 }
 .nav-brand{
   font-family:'Tektur',sans-serif;font-weight:500;font-size:.95rem;letter-spacing:.18em;
-  color:var(--accent);text-shadow:var(--glow-cyan);
 }
 a.nav-brand{
   display:inline-flex;align-items:center;gap:.45rem;
   padding:.38rem .85rem .38rem .75rem;
-  color:var(--accent);
-  border:1px solid rgba(0,240,255,.4);
-  background:linear-gradient(135deg,rgba(0,240,255,.1),rgba(123,92,255,.08));
+  color:#fff;
+  border:1px solid var(--accent);
+  background:transparent;
   clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);
-  cursor:pointer;user-select:none;
-  transition:transform .18s ease,box-shadow .28s ease,border-color .28s ease,background .28s ease,color .28s ease;
+  cursor:pointer;user-select:none;position:relative;overflow:hidden;
+  transition:color .3s,box-shadow .3s,text-shadow .3s;
+  text-shadow:none;
+}
+a.nav-brand::before{
+  content:'';position:absolute;inset:0;background:var(--accent);
+  transform:translateX(-101%);transition:transform .35s;z-index:0;
+}
+a.nav-brand .brand-text,
+a.nav-brand .brand-hint{
+  position:relative;z-index:2;color:#fff;
+}
+a.nav-brand .brand-sweep{
+  position:absolute;top:-18%;left:0;width:2.2ch;height:136%;
+  background:var(--accent);
+  transform:translateX(-220%) skewX(-28deg);
+  pointer-events:none;opacity:0;z-index:1;
+}
+a.nav-brand.is-sweeping .brand-sweep{opacity:1;animation:cvSweep .46s linear forwards}
+@keyframes cvSweep{
+  0%{transform:translateX(-200%) skewX(-28deg)}
+  100%{transform:translateX(560%) skewX(-28deg)}
 }
 a.nav-brand .brand-hint{
   font-family:'JetBrainsMono',monospace;font-size:.58rem;letter-spacing:.14em;
-  color:var(--muted);text-transform:uppercase;
+  text-transform:uppercase;
 }
-a.nav-brand:hover{
-  color:#fff;border-color:var(--accent);
-  background:linear-gradient(135deg,rgba(0,240,255,.22),rgba(123,92,255,.16));
-  box-shadow:var(--glow-cyan);transform:translateY(-2px);
-  text-shadow:var(--glow-cyan);
-}
-a.nav-brand:hover .brand-hint{color:var(--accent)}
-a.nav-brand:active{
-  transform:scale(.96) translateY(0);
-  box-shadow:0 0 14px rgba(0,240,255,.7),inset 0 0 12px rgba(0,240,255,.18);
-}
+a.nav-brand:hover{color:#fff;box-shadow:var(--glow-cyan);text-shadow:none}
+a.nav-brand:hover .brand-text,
+a.nav-brand:hover .brand-hint{color:#fff}
+a.nav-brand:hover::before{transform:translateX(0)}
+a.nav-brand:active{box-shadow:0 0 14px rgba(0,240,255,.7)}
 a.nav-brand:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .nav-links{display:flex;gap:1.8rem;align-items:center}
 .nav-links a{
@@ -144,21 +157,20 @@ a.nav-brand:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .hero{
   min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
   position:relative;padding:6rem 2rem 3rem;text-align:center;
+  -webkit-user-select:none;user-select:none;
 }
-/* 透视网格地板 */
-.grid-floor{
-  position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);
-  width:200%;height:45vh;perspective:340px;perspective-origin:50% 0%;
-  z-index:0;opacity:.5;pointer-events:none;
+html.dna-dragging,html.dna-dragging *{
+  -webkit-user-select:none!important;user-select:none!important;
+  cursor:grabbing;
 }
-.grid-floor::before{
-  content:'';position:absolute;inset:0;
-  background-image:linear-gradient(var(--accent) 1px,transparent 1px),linear-gradient(90deg,var(--accent) 1px,transparent 1px);
-  background-size:60px 60px;
-  transform:rotateX(72deg);transform-origin:50% 100%;
-  animation:gridScroll 4s linear infinite;mask-image:linear-gradient(to top,rgba(0,0,0,.8),transparent 80%);
+#dna-canvas{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
 }
-@keyframes gridScroll{to{background-position:0 60px}}
+#mol-burst{position:fixed;inset:0;z-index:40;pointer-events:none;overflow:hidden}
+.mol{
+  position:fixed;font-family:'JetBrainsMono',monospace;font-size:.78rem;letter-spacing:.04em;font-weight:700;
+  pointer-events:none;white-space:nowrap;will-change:transform,opacity;
+}
 
 /* HUD 状态条 */
 .hud-status{
@@ -212,26 +224,34 @@ a.nav-brand:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
   margin-top:2.8rem;display:flex;flex-direction:column;align-items:center;gap:.8rem;
 }
 .qr-frame{
-  position:relative;width:180px;height:180px;
-  background:linear-gradient(135deg,var(--bg2),var(--bg3));
-  border:1px solid var(--rule);border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
+  position:relative;width:min(460px,92vw);aspect-ratio:1024 / 373;
+  background:
+    radial-gradient(ellipse 70% 110% at 18% 50%, rgba(0,240,255,.18), transparent 58%),
+    radial-gradient(ellipse 60% 90% at 82% 48%, rgba(123,92,255,.14), transparent 62%),
+    linear-gradient(145deg, #070b14 0%, #0b1020 48%, #101a2c 100%);
+  border:1px solid var(--rule);border-radius:10px;
   overflow:hidden;
+  box-shadow:0 0 36px rgba(0,240,255,.1), inset 0 0 48px rgba(0,240,255,.04);
 }
-/* HUD 四角括号 */
+.qr-wash{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:
+    linear-gradient(90deg, rgba(0,240,255,.08), transparent 38%, transparent 62%, rgba(123,92,255,.09)),
+    linear-gradient(180deg, rgba(0,240,255,.05), transparent 40%, rgba(5,7,15,.35));
+}
+.qr-img{
+  position:relative;z-index:1;display:block;width:100%;height:100%;
+  object-fit:contain;
+}
 .qr-frame::before,.qr-frame::after,
 .qr-frame .c1,.qr-frame .c2{
-  content:'';position:absolute;width:18px;height:18px;border:2px solid var(--accent);
+  content:'';position:absolute;width:18px;height:18px;border:2px solid var(--accent);z-index:3;pointer-events:none;
 }
 .qr-frame::before{top:6px;left:6px;border-right:none;border-bottom:none}
 .qr-frame::after{top:6px;right:6px;border-left:none;border-bottom:none}
 .qr-frame .c1{bottom:6px;left:6px;border-right:none;border-top:none}
 .qr-frame .c2{bottom:6px;right:6px;border-left:none;border-top:none}
-.qr-placeholder{
-  text-align:center;font-family:'JetBrainsMono',monospace;color:var(--muted);font-size:.68rem;line-height:1.7;
-}
-.qr-placeholder .ic{font-size:2.4rem;color:var(--accent2);opacity:.5;margin-bottom:.4rem;display:block}
-.qr-frame:hover{border-color:var(--accent);box-shadow:var(--glow-cyan)}
+.qr-frame:hover{border-color:var(--accent);box-shadow:var(--glow-cyan), inset 0 0 48px rgba(0,240,255,.08)}
 .qr-label{
   font-family:'JetBrainsMono',monospace;font-size:.7rem;color:var(--accent);
   letter-spacing:.15em;text-transform:uppercase;
@@ -250,15 +270,6 @@ a.nav-brand:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 .btn.alt{border-color:var(--accent2);color:var(--accent2)}
 .btn.alt::before{background:var(--accent2)}
 .btn.alt:hover{box-shadow:var(--glow-purple)}
-
-/* 向下提示 */
-.scroll-hint{
-  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
-  font-family:'JetBrainsMono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:.2em;
-  display:flex;flex-direction:column;align-items:center;gap:.5rem;
-}
-.scroll-hint .line{width:1px;height:30px;background:linear-gradient(var(--accent),transparent);animation:scrollLine 2s infinite}
-@keyframes scrollLine{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}50.01%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 
 /* ============ 栏目区 ============ */
 .sections{padding:5rem 2rem;max-width:1200px;margin:0 auto;position:relative}
@@ -342,16 +353,18 @@ footer .ft-travel img{width:20px;height:20px}
   <div class="boot-text">INITIALIZING KUNG-HSINYU.STATION...</div>
 </div>
 
-<!-- 粒子背景 -->
+<!-- 粒子 + DNA 背景 -->
+<canvas id="dna-canvas"></canvas>
 <canvas id="particle-canvas"></canvas>
 <div class="scanlines"></div>
 <div class="vignette"></div>
+<div id="mol-burst"></div>
 
 <div class="wrap">
 
 <!-- 顶部导航 -->
 <nav class="navbar">
-  <a href="cv/index.html" class="nav-brand" aria-label="打开个人简历">KUNG_HSINYÜ<span class="brand-hint">CV</span></a>
+  <a href="cv/index.html" class="nav-brand" aria-label="打开个人简历"><span class="brand-sweep" aria-hidden="true"></span><span class="brand-text">KUNG_HSINYÜ</span><span class="brand-hint">CV</span></a>
   <div class="nav-links">
     <a href="#politics">时政观察</a>
     <a href="#tech">技术札记</a>
@@ -366,8 +379,6 @@ footer .ft-travel img{width:20px;height:20px}
 
 <!-- 英雄区 -->
 <section class="hero">
-  <div class="grid-floor"></div>
-
   <div class="hud-status">
     <span><span class="hud-dot green"></span>SYS · ONLINE</span>
     <span><span class="hud-dot"></span>SIGNAL · 98%</span>
@@ -387,23 +398,15 @@ footer .ft-travel img{width:20px;height:20px}
   <div class="qr-zone">
     <div class="qr-frame">
       <span class="c1"></span><span class="c2"></span>
-      <div class="qr-placeholder">
-        <span class="ic">▣</span>
-        QR CODE<br>占位区<br>
-        <span style="font-size:.6rem;opacity:.6">在此放置公众号二维码</span>
-      </div>
+      <div class="qr-wash" aria-hidden="true"></div>
+      <img class="qr-img" src="assets/wechat-gzh.png" width="1024" height="373" alt="微信公众号：防肠断">
     </div>
-    <div class="qr-label">// 微信公众号 · 扫码关注</div>
+    <div class="qr-label">// 微信公众号 · 防肠断 · 扫码或搜一搜</div>
   </div>
 
   <div class="hero-cta">
     <a href="#politics" class="btn">进入空间站</a>
     <a href="https://www.travellings.cn/go.html" target="_blank" rel="noopener" class="btn alt">开往 · 友链接力</a>
-  </div>
-
-  <div class="scroll-hint">
-    <span>SCROLL</span>
-    <span class="line"></span>
   </div>
 </section>
 
@@ -494,6 +497,7 @@ footer .ft-travel img{width:20px;height:20px}
     <a href="#essay">随笔小记</a>
     <a href="#games">桌游·设计</a>
     <a href="cv/index.html">简历</a>
+    <a href="planner/index.html">日程</a>
     <a href="#">关于</a>
     <a href="#">RSS</a>
   </div>

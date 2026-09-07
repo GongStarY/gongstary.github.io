@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>日程台 // KUNG Hsinyü</title>
+<style>
+@font-face { font-family:'Tektur'; src:url('../_shared/fonts/Tektur-Medium.ttf') format('truetype'); font-weight:500; font-style:normal; font-display:swap; }
+@font-face { font-family:'Tektur'; src:url('../_shared/fonts/Tektur-Regular.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:'JetBrainsMono'; src:url('../_shared/fonts/JetBrainsMono-Bold.ttf') format('truetype'); font-weight:700; font-style:normal; font-display:swap; }
+@font-face { font-family:'JetBrainsMono'; src:url('../_shared/fonts/JetBrainsMono-Regular.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:'Outfit'; src:url('../_shared/fonts/Outfit-Bold.ttf') format('truetype'); font-weight:700; font-style:normal; font-display:swap; }
+@font-face { font-family:'Outfit'; src:url('../_shared/fonts/Outfit-Regular.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+
+:root{
+  --bg:#05070f;--bg2:#0b1020;--bg3:#111830;
+  --ink:#e6f1ff;--muted:#6b7a99;--rule:#1a2845;
+  --accent:#00f0ff;--accent2:#7b5cff;--accent3:#ff2d75;
+  --ok:#00ff88;--warn:#ffcc4d;--bar-bg:#111830;
+  --glow-cyan:0 0 20px rgba(0,240,255,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif;
+  background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.6;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{color:#fff;text-shadow:var(--glow-cyan)}
+#particle-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.scanlines{
+  position:fixed;inset:0;z-index:9990;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,240,255,.025) 3px,rgba(0,0,0,0) 4px);
+  mix-blend-mode:overlay;opacity:.55;
+}
+.navbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.9rem 2rem;background:rgba(5,7,15,.86);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--rule);
+}
+a.nav-brand{
+  display:inline-flex;align-items:center;gap:.45rem;
+  font-family:'Tektur',sans-serif;font-weight:500;font-size:.95rem;letter-spacing:.18em;
+  padding:.38rem .85rem .38rem .75rem;color:var(--accent);
+  border:1px solid rgba(0,240,255,.4);
+  background:linear-gradient(135deg,rgba(0,240,255,.1),rgba(123,92,255,.08));
+  clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);
+}
+a.nav-brand .brand-hint{font-family:'JetBrainsMono',monospace;font-size:.58rem;letter-spacing:.14em;color:var(--muted)}
+.nav-links{display:flex;gap:1.4rem}
+.nav-links a{font-family:'JetBrainsMono',monospace;font-size:.72rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.nav-links a.active{color:var(--accent)}
+
+#gate{
+  position:relative;z-index:2;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;padding:6rem 1.2rem 2rem;
+}
+.gate-card{
+  width:min(440px,100%);
+  background:linear-gradient(145deg,rgba(11,16,32,.92),rgba(17,24,48,.7));
+  border:1px solid var(--rule);padding:2rem 1.6rem;
+  clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+}
+.gate-card .tag{font-family:'JetBrainsMono',monospace;font-size:.68rem;color:var(--accent);letter-spacing:.22em}
+.gate-card h1{font-family:'Tektur',sans-serif;font-size:1.5rem;margin:.5rem 0 1rem}
+.gate-card p{font-size:.82rem;color:var(--muted);margin-bottom:1rem}
+.gate-card input{
+  width:100%;margin:.35rem 0;padding:.7rem .8rem;background:var(--bg);
+  border:1px solid var(--rule);color:var(--ink);font-family:'JetBrainsMono',monospace;
+}
+.gate-card label.chk{display:flex;gap:.5rem;align-items:center;font-size:.8rem;color:var(--muted);margin:.8rem 0}
+.btn{
+  font-family:'JetBrainsMono',monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:.65rem 1.2rem;border:1px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer;
+}
+.btn:hover{background:var(--accent);color:var(--bg)}
+.btn.ghost{border-color:var(--rule);color:var(--muted)}
+.err{color:var(--accent3);font-size:.78rem;min-height:1.2em;margin-top:.4rem}
+
+#app{display:none;position:relative;z-index:1;padding:5.4rem 1.4rem 2.5rem}
+.shell{
+  max-width:1280px;margin:0 auto;
+  display:grid;grid-template-columns:1fr 220px;gap:1.4rem;align-items:start;
+}
+.toolbar{
+  display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;margin-bottom:1rem;
+}
+.toolbar .tag{font-family:'JetBrainsMono',monospace;font-size:.68rem;color:var(--accent);letter-spacing:.18em;margin-right:auto}
+.file-btn{position:relative;overflow:hidden}
+.file-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+
+.composer{
+  background:linear-gradient(145deg,rgba(11,16,32,.75),rgba(17,24,48,.5));
+  border:1px solid var(--rule);padding:1rem;margin-bottom:1rem;
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+}
+.composer h2{font-family:'Tektur',sans-serif;font-size:1rem;margin-bottom:.7rem}
+.row{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.row.stack{flex-direction:column;align-items:stretch}
+.row input,.row select,textarea{
+  background:var(--bg);border:1px solid var(--rule);color:var(--ink);
+  padding:.5rem .6rem;font-family:'JetBrainsMono','Outfit',sans-serif;font-size:.82rem;
+}
+.row input[type="text"],.row textarea{flex:1;min-width:180px;font-family:'Outfit',sans-serif}
+.row textarea{min-height:4.2rem;resize:vertical;line-height:1.55;width:100%}
+.row select{
+  appearance:none;-webkit-appearance:none;
+  min-width:5.2rem;cursor:pointer;color:var(--accent);
+  background:var(--bg) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path fill='%2300f0ff' d='M0 0l5 6 5-6z'/></svg>") no-repeat right .55rem center;
+  padding-right:1.5rem;
+}
+.row select option{background:#0b1020;color:#e6f1ff}
+.fld{display:flex;align-items:center;gap:.28rem}
+.fld .k{font-family:'JetBrainsMono',monospace;font-size:.62rem;color:var(--accent);letter-spacing:.08em}
+#composer-fields .row + .row{margin-top:.55rem}
+
+.group{
+  border:1px solid var(--rule);margin-bottom:.7rem;
+  background:rgba(11,16,32,.62);
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+}
+.group-head{
+  width:100%;text-align:left;background:transparent;border:0;color:inherit;
+  padding:.75rem .9rem .55rem;cursor:pointer;display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;
+}
+.g-outer{font-size:.78rem;color:var(--muted);font-weight:400}
+.g-inner{font-size:1.12rem;font-weight:700;color:#fff;letter-spacing:.04em}
+.pct{margin-left:auto;font-family:'JetBrainsMono',monospace;font-size:.68rem;color:var(--accent)}
+.bar{
+  height:8px;margin:0 .9rem .75rem;background:var(--bar-bg);border:1px solid var(--rule);
+  display:flex;overflow:hidden;
+}
+.bar .ok{background:var(--ok)}
+.bar .late{background:var(--warn)}
+.group-body{padding:0 .9rem .85rem;display:none}
+.group.open .group-body{display:block}
+.task{
+  display:flex;gap:.6rem;align-items:flex-start;
+  padding:.45rem 0;border-top:1px solid rgba(26,40,69,.85);
+}
+.task input[type="checkbox"]{margin-top:.35rem;accent-color:var(--ok)}
+.task .body{flex:1;min-width:0}
+.task .title{font-size:.92rem}
+.task .note{font-size:.78rem;color:var(--muted);margin-top:.15rem;line-height:1.5}
+.task.done .title,.task.done .note{color:var(--muted);text-decoration:line-through}
+.task .due{font-family:'JetBrainsMono',monospace;font-size:.62rem;color:var(--muted);white-space:nowrap}
+.task.overdue .due{color:var(--warn)}
+.task button.del{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:.8rem}
+.empty{color:var(--muted);font-size:.85rem;padding:1.5rem .2rem}
+
+.sidebar{
+  position:sticky;top:5.2rem;
+  border:1px solid var(--rule);
+  background:linear-gradient(145deg,rgba(11,16,32,.9),rgba(17,24,48,.55));
+  padding:.9rem .75rem;
+  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+}
+.sidebar .lab{font-family:'JetBrainsMono',monospace;font-size:.62rem;color:var(--accent);letter-spacing:.2em;margin-bottom:.65rem}
+.track-btn{
+  display:block;width:100%;text-align:left;margin:0 0 .4rem;
+  padding:.5rem .6rem;background:transparent;color:var(--muted);
+  border:1px solid var(--rule);cursor:pointer;font-family:'JetBrainsMono',monospace;font-size:.72rem;
+}
+.track-btn.active{color:var(--bg);background:var(--accent);border-color:var(--accent)}
+.audit{
+  margin-top:.8rem;font-size:.68rem;color:var(--muted);line-height:1.5;
+  font-family:'JetBrainsMono',monospace;word-break:break-all;
+}
+
+@media(max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .sidebar{position:static;display:flex;flex-wrap:wrap;gap:.4rem}
+  .sidebar .lab,.audit{width:100%}
+  .track-btn{width:auto;flex:1}
+}
+@media(max-width:768px){
+  .nav-links a:not(.active){display:none}
+}
+</style>
+</head>
+<body>
+<canvas id="particle-canvas"></canvas>
+<div class="scanlines"></div>
+
+<nav class="navbar">
+  <a href="../index.html" class="nav-brand">KUNG_HSINYÜ<span class="brand-hint">HOME</span></a>
+  <div class="nav-links">
+    <a href="../cv/index.html">简历</a>
+    <a href="./index.html" class="active">日程</a>
+  </div>
+</nav>
+
+<section id="gate">
+  <div class="gate-card">
+    <div class="tag">// ACCESS GATE</div>
+    <h1 id="gate-title">日程台</h1>
+    <p id="gate-desc">此页数据只存在你的浏览器和你导出的 txt 里，不会写入 GitHub。口令哈希存在本机；公开网页上的前端锁只能挡住随便点进来的人。</p>
+    <div id="setup-fields" hidden>
+      <input id="pw1" type="password" placeholder="设置口令" autocomplete="new-password">
+      <input id="pw2" type="password" placeholder="再输入一次" autocomplete="new-password">
+    </div>
+    <div id="login-fields">
+      <input id="pw" type="password" placeholder="口令" autocomplete="current-password">
+    </div>
+    <label class="chk"><input id="trust" type="checkbox"> 信任此设备（下次免输口令）</label>
+    <button class="btn" id="gate-go" type="button">进入</button>
+    <div class="err" id="gate-err"></div>
+  </div>
+</section>
+
+<main id="app">
+  <div class="shell">
+    <section>
+      <div class="toolbar">
+        <span class="tag" id="track-title">// 每日计划</span>
+        <button class="btn" type="button" id="btn-export">导出 txt</button>
+        <label class="btn ghost file-btn">读取 txt<input type="file" id="btn-import" accept=".txt,.md,text/plain"></label>
+        <button class="btn ghost" type="button" id="btn-bind" hidden>绑定本地文件</button>
+        <button class="btn ghost" type="button" id="btn-lock">锁定</button>
+      </div>
+
+      <div class="composer">
+        <h2>新建任务</h2>
+        <div id="composer-fields"></div>
+        <div class="row" style="margin-top:.55rem">
+          <button class="btn" type="button" id="btn-add">添加任务</button>
+        </div>
+      </div>
+
+      <div id="board"></div>
+    </section>
+
+    <aside class="sidebar">
+      <div class="lab">// PLAN TRACKS</div>
+      <button class="track-btn active" data-track="daily" type="button">每日计划</button>
+      <button class="track-btn" data-track="weekly" type="button">每周计划</button>
+      <button class="track-btn" data-track="monthly" type="button">每月计划</button>
+      <button class="track-btn" data-track="quarterly" type="button">每季度计划</button>
+      <button class="track-btn" data-track="yearly" type="button">年计划</button>
+      <button class="track-btn" data-track="life" type="button">人生计划</button>
+      <div class="audit" id="audit"></div>
+    </aside>
+  </div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
