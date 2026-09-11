@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>游戏生涯 // 战斗策划向 · KUNG Hsinyü</title>
+<meta name="description" content="贡星宇的游戏生涯简述：按战斗策划相关度分类，标注游玩时长与完成度。">
+<style>
+@font-face { font-family:'Tektur'; src:url('../_shared/fonts/Tektur-Medium.ttf') format('truetype'); font-weight:500; font-style:normal; font-display:swap; }
+@font-face { font-family:'Tektur'; src:url('../_shared/fonts/Tektur-Regular.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:'JetBrainsMono'; src:url('../_shared/fonts/JetBrainsMono-Bold.ttf') format('truetype'); font-weight:700; font-style:normal; font-display:swap; }
+@font-face { font-family:'JetBrainsMono'; src:url('../_shared/fonts/JetBrainsMono-Regular.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:'Outfit'; src:url('../_shared/fonts/Outfit-Bold.ttf') format('truetype'); font-weight:700; font-style:normal; font-display:swap; }
+@font-face { font-family:'Outfit'; src:url('../_shared/fonts/Outfit-Regular.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+
+:root{
+  --bg:#05070f;--bg2:#0b1020;--bg3:#111830;
+  --ink:#e6f1ff;--muted:#6b7a99;--rule:#1a2845;
+  --accent:#00f0ff;--accent2:#7b5cff;--accent3:#ff2d75;
+  --glow-cyan:0 0 20px rgba(0,240,255,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif;
+  background:var(--bg);color:var(--ink);line-height:1.65;overflow-x:hidden;
+}
+a{color:var(--accent);text-decoration:none}
+a:hover{color:#fff;text-shadow:var(--glow-cyan)}
+#particle-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.scanlines{
+  position:fixed;inset:0;z-index:9990;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,0) 0,rgba(0,0,0,0) 2px,rgba(0,240,255,.025) 3px,rgba(0,0,0,0) 4px);
+  mix-blend-mode:overlay;opacity:.55;
+}
+.vignette{
+  position:fixed;inset:0;z-index:9989;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.7) 100%);
+}
+.navbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.9rem 2rem;background:rgba(5,7,15,.86);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--rule);
+}
+a.nav-brand{
+  display:inline-flex;align-items:center;gap:.45rem;
+  font-family:'Tektur',sans-serif;font-weight:500;font-size:.95rem;letter-spacing:.18em;
+  padding:.38rem .85rem .38rem .75rem;color:var(--accent);
+  border:1px solid rgba(0,240,255,.4);
+  background:linear-gradient(135deg,rgba(0,240,255,.1),rgba(123,92,255,.08));
+  clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);
+}
+a.nav-brand .brand-hint{font-family:'JetBrainsMono',monospace;font-size:.58rem;letter-spacing:.14em;color:var(--muted)}
+.nav-links{display:flex;gap:1.4rem;flex-wrap:wrap}
+.nav-links a{font-family:'JetBrainsMono',monospace;font-size:.72rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.nav-links a.active{color:var(--accent)}
+
+.wrap{position:relative;z-index:1}
+.hero{padding:7.6rem 2rem 1.6rem;text-align:center}
+.hero .tag{font-family:'JetBrainsMono',monospace;font-size:.72rem;color:var(--accent);letter-spacing:.28em;text-transform:uppercase;margin-bottom:.8rem}
+.hero h1{font-family:'Tektur',sans-serif;font-weight:500;font-size:clamp(1.7rem,4.4vw,2.8rem);color:#fff;letter-spacing:.05em}
+.hero p{max-width:720px;margin:1rem auto 0;color:var(--muted);font-size:.92rem}
+.hero .rule{width:60px;height:2px;margin:1.1rem auto;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+
+.shell{max-width:1120px;margin:0 auto;padding:0 1.4rem 4.5rem}
+.note{
+  border:1px solid var(--rule);padding:1rem 1.15rem;margin-bottom:1.4rem;
+  background:linear-gradient(145deg,rgba(11,16,32,.8),rgba(17,24,48,.5));
+  clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+  font-size:.84rem;color:#c9d7ee;
+}
+.note strong{color:var(--accent);font-weight:500}
+.filters{display:flex;flex-wrap:wrap;gap:.45rem;margin:0 0 1.5rem}
+.filter{
+  font-family:'JetBrainsMono',monospace;font-size:.64rem;letter-spacing:.06em;
+  padding:.4rem .7rem;border:1px solid var(--rule);background:transparent;color:var(--muted);cursor:pointer;
+  clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px);
+}
+.filter:hover,.filter.on{color:var(--bg);background:var(--accent);border-color:var(--accent);box-shadow:var(--glow-cyan)}
+
+.cat{margin-bottom:2rem}
+.cat-head{display:flex;align-items:baseline;gap:.75rem;margin-bottom:.85rem;flex-wrap:wrap}
+.cat-head .idx{font-family:'JetBrainsMono',monospace;font-size:.62rem;color:var(--accent);letter-spacing:.16em}
+.cat-head h2{font-family:'Tektur',sans-serif;font-size:1.12rem;color:#fff}
+.cat-head .why{font-size:.78rem;color:var(--muted);flex:1;min-width:220px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.75rem}
+.card{
+  border:1px solid var(--rule);padding:.9rem .95rem .95rem;
+  background:linear-gradient(145deg,rgba(11,16,32,.72),rgba(17,24,48,.48));
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+  position:relative;
+}
+.card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--accent),var(--accent2));opacity:.5}
+.card h3{font-size:.95rem;color:#fff;margin-bottom:.28rem;padding-left:.15rem}
+.card .tags{display:flex;flex-wrap:wrap;gap:.28rem;margin:.35rem 0 .45rem}
+.tag{
+  font-family:'JetBrainsMono',monospace;font-size:.58rem;letter-spacing:.03em;
+  padding:.12rem .4rem;border:1px solid var(--rule);color:var(--muted);
+}
+.tag.time{color:var(--accent);border-color:rgba(0,240,255,.35);background:rgba(0,240,255,.07)}
+.tag.done{color:#c4b5ff;border-color:rgba(123,92,255,.4)}
+.tag.pref{color:var(--accent3);border-color:rgba(255,45,117,.4)}
+.card p{font-size:.78rem;color:#c9d7ee;padding-left:.15rem}
+
+footer{border-top:1px solid var(--rule);padding:1.6rem 2rem;text-align:center}
+footer .ft-copy{font-family:'JetBrainsMono',monospace;font-size:.68rem;color:var(--muted);letter-spacing:.08em}
+footer .accent{color:var(--accent)}
+
+@media(max-width:768px){
+  .navbar{padding:.7rem 1rem}
+  .nav-links a:not(.active){display:none}
+  .hero{padding:6.2rem 1.1rem 1.2rem}
+  .shell{padding:0 1rem 3.2rem}
+}
+@media print{
+  #particle-canvas,.scanlines,.vignette,.navbar,.filters{display:none !important}
+  body{background:#fff;color:#111}
+  .hero{padding:1rem 0}
+  .hero h1,.cat-head h2,.card h3{color:#111}
+  .card,.note{border-color:#ccc;background:#fff;clip-path:none}
+  .tag{border-color:#999;color:#333}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="particle-canvas"></canvas>
+<div class="scanlines"></div>
+<div class="vignette"></div>
+<div class="wrap">
+<nav class="navbar">
+  <a href="../index.html" class="nav-brand" aria-label="返回空间站首页">KUNG_HSINYÜ<span class="brand-hint">HOME</span></a>
+  <div class="nav-links">
+    <a href="../cv/index.html">简历</a>
+    <a href="./index.html" class="active">游戏生涯</a>
+    <a href="../index.html#games">桌游·设计</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="tag">// COMBAT DESIGNER DOSSIER</div>
+  <h1>游戏生涯简述</h1>
+  <div class="rule"></div>
+  <p>按米哈游战斗策划关注点排序：先 3C / 打击感与枪感，再战术指挥与策略数值，最后叙事与解谜。时长只写有记录的数字，其余用完成度标签，不编造小时。</p>
+</header>
+
+<div class="shell">
+  <div class="note">
+    <strong>排序逻辑。</strong>岗位要看机制设计、数值节奏、操作手感与品类深度。因此动作与射击在前，RTS / 战术指挥随后（补给、克制、TTK），大战略与生存次之，叙事向放在最后作审美补充。个人喜好表中的标签（最爱、最影响、最爽快等）一并保留。
+  </div>
+  <div class="filters" id="filters"></div>
+  <div id="board"></div>
+</div>
+
+<footer>
+  <div class="ft-copy">© 2026 <span class="accent">KUNG Hsinyü</span> · GAME CAREER · FOR COMBAT DESIGNER</div>
+</footer>
+</div>
+<script src="../assets/effects.js"></script>
+<script>
+const CATS = [
+  {
+    id: "action",
+    idx: "01",
+    title: "动作 · 3C / 打击感",
+    why: "对应技能窗口、削韧、处决反馈、系统交互战斗。",
+    games: [
+      { name: "黑神话：悟空", time: "时长未统计", done: "重度游玩", pref: "", note: "招式节奏与 Boss 阶段信息；写实动作的重量感样本。" },
+      { name: "塞尔达传说：旷野之息", time: "时长未统计", done: "已通关", pref: "最影响我的", note: "物理 / 化学 / 环境互动生成解法，而不是单轴连招。" },
+      { name: "真·三国无双 4 Empires", time: "时长未统计", done: "轻度游玩", pref: "最爽快的", note: "清屏节奏与兵潮密度；用来标定「爽」的阈值，不是最长盘。" },
+      { name: "天国拯救", time: "113.1h", done: "已通关", pref: "", note: "重量、耐力、装备差把近战做成生存博弈。" },
+      { name: "巫师 3：狂猎", time: "时长未统计", done: "深度游玩", pref: "最喜欢的画面", note: "剑术节奏、炼金构建与大型怪物读招。" },
+      { name: "巫师 2", time: "13.1h", done: "轻度游玩", pref: "", note: "同系列对照：镜头容错与构建深度差一档。" },
+      { name: "三国群英传 3", time: "时长未统计", done: "已通关", pref: "", note: "国风战场与武将技能差异，偏策略动作。" }
+    ]
+  },
+  {
+    id: "stealth",
+    idx: "02",
+    title: "潜行 · 动作",
+    why: "能力组合、资源循环、关卡即谜题——战斗规则如何改玩家路径。",
+    games: [
+      { name: "刺客信条 II", time: "时长未统计", done: "已通关", pref: "最惊艳的", note: "城市节奏、社交潜行与跑酷手感定型。" },
+      { name: "刺客信条 III / 兄弟会 / 黑旗", time: "时长未统计", done: "系列通关", pref: "黑旗·最喜欢的配乐", note: "海战手感、军团指挥与潜行资源的品类漂移。" },
+      { name: "耻辱 / 耻辱 2 / 界外魔之死", time: "时长未统计", done: "系列通关", pref: "最喜欢的配音", note: "高杀 / 无杀双路径；能力是关卡语法。" },
+      { name: "瘟疫传说：无罪", time: "时长未统计", done: "已通关", pref: "最受苦的", note: "追逐战节奏与失败惩罚，偏压迫而非权力幻想。" },
+      { name: "看门狗", time: "时长未统计", done: "未通关", pref: "总有一天能打完", note: "黑客视野改写交火，尚在补完。" }
+    ]
+  },
+  {
+    id: "shooter",
+    idx: "03",
+    title: "射击 · 枪感 / 载具 / TTK",
+    why: "弹道、爆头线、模块损毁、远程提前量——写实射击预研最对口的样本。",
+    games: [
+      { name: "战舰世界", time: "357.5h", done: "重度游玩", pref: "", note: "弹道提前量、装甲带、阵型；最长盘的远程 TTK 课。" },
+      { name: "Grand Theft Auto V", time: "69h 8min", done: "已通关", pref: "最喜欢的结局", note: "驾驶射击、任务脚本战斗与开放世界遭遇。" },
+      { name: "战争雷霆", time: "26.6h", done: "重度游玩", pref: "", note: "载具模块损毁与多兵种交火。" },
+      { name: "应征入伍（从军）", time: "时长未统计", done: "重度游玩", pref: "", note: "步战协同、压制推进、战场能见度。" },
+      { name: "使命召唤 2 / 4 / 5 / 黑色行动 / MW3", time: "时长未统计", done: "系列通关", pref: "", note: "枪感与战役脚本节奏；线性射击的教科书。" },
+      { name: "孤岛危机", time: "时长未统计", done: "已通关", pref: "", note: "纳米能力 3C 叠在枪战之上。" },
+      { name: "黑手党 I / II", time: "时长未统计", done: "已通关", pref: "II·最喜欢的角色", note: "掩护射击与过场驱动的动作表演。" },
+      { name: "GTA 圣安地列斯 / 罪恶都市", time: "时长未统计", done: "已通关", pref: "", note: "早期 3C 与任务结构对照 V。" },
+      { name: "凡尔登", time: "时长未统计", done: "轻度游玩", pref: "", note: "一战线条与火力密度。" },
+      { name: "无主之地", time: "时长未统计", done: "轻度游玩", pref: "", note: "枪械词条与技能构建的轻量样本。" },
+      { name: "孤岛惊魂 3", time: "时长未统计", done: "已游玩", pref: "最被高估的", note: "塔与狩猎循环清楚，个人并不买账其神坛位置。" }
+    ]
+  },
+  {
+    id: "rts",
+    idx: "04",
+    title: "即时战略 · 战术指挥",
+    why: "补给、克制、视野、损耗——机制与数值节奏，对齐策略向战斗设计。",
+    games: [
+      { name: "归乡列车 Last Train Home", time: "83.2h", done: "已通关", pref: "最想安利的", note: "资源-士气-战斗三角；小队损耗会反噬整条线路。" },
+      { name: "统一指挥 2", time: "时长未统计", done: "深度游玩", pref: "最爱的", note: "补给线即胜负；步兵 / 装甲 / 炮兵的时机课。" },
+      { name: "帝国时代 2", time: "时长未统计", done: "重度游玩", pref: "", note: "经济曲线与兵种克制。" },
+      { name: "英雄连 / 英雄连 2", time: "时长未统计", done: "已通关", pref: "", note: "掩体、钳制、技能窗口。" },
+      { name: "突袭 4", time: "时长未统计", done: "已通关", pref: "", note: "二战指挥层：炮火与突击时机。" },
+      { name: "突袭 2", time: "时长未统计", done: "轻度游玩", pref: "", note: "系列对照，偏复古指挥。" },
+      { name: "星际争霸 2：自由之翼", time: "时长未统计", done: "轻度游玩", pref: "爷青回", note: "信息战与战役节奏；多人深度有限。" }
+    ]
+  },
+  {
+    id: "strategy",
+    idx: "05",
+    title: "策略 · 系统博弈",
+    why: "长线规则、行动力、信息不对称——练的是数值直觉与系统设计。" ,
+    games: [
+      { name: "暮光斗争 Twilight Struggle", time: "15.5h", done: "桌游 / 数码", pref: "我咋会喜欢这个", note: "计牌、空间、行动力：纯机制对抗。" },
+      { name: "十字军之王 2", time: "时长未统计", done: "深度游玩", pref: "", note: "角色层与国家层耦合。" },
+      { name: "欧陆风云 3 / 维多利亚 2", time: "时长未统计", done: "深度游玩", pref: "", note: "大战略压力如何变成决策。" },
+      { name: "太阁立志传 V DX", time: "时长未统计", done: "已通关", pref: "最喜欢的剧情", note: "成长、势力与战场的长线扮演。" },
+      { name: "太阁立志传 IV", time: "时长未统计", done: "已通关", pref: "玩的第一款", note: "游戏生涯的起点，策略 RPG 底色。" },
+      { name: "大航海时代 4", time: "时长未统计", done: "已通关", pref: "", note: "经营与海战的节奏切换。" },
+      { name: "千爵史诗", time: "4h 24min", done: "轻度游玩", pref: "", note: "短样本，未深挖构筑。" }
+    ]
+  },
+  {
+    id: "survival",
+    idx: "06",
+    title: "生存 · 压迫循环",
+    why: "非英雄战斗：风险、道德与资源死亡螺旋，补「失败体验」这一课。",
+    games: [
+      { name: "这是我的战争 This War of Mine", time: "15.5h", done: "已通关", pref: "最致郁的", note: "战斗是成本而不是表演。" },
+      { name: "勇敢的心：伟大战争", time: "时长未统计", done: "已游玩", pref: "最治愈的", note: "战争题材下的解谜与情感节奏。" }
+    ]
+  },
+  {
+    id: "other",
+    idx: "07",
+    title: "叙事 · 解谜 · 协作（审美补充）",
+    why: "岗位也看生活与艺术素养；这些条目说明节奏、观察力与合作手感，不冒充核心战斗盘。",
+    games: [
+      { name: "去月球 To the Moon", time: "时长未统计", done: "已通关", pref: "最长情的", note: "叙事节奏与主题兑现。" },
+      { name: "双人成行", time: "13h", done: "已通关", pref: "最快乐的", note: "协作关卡与手感配合。" },
+      { name: "文字游戏", time: "5.7h", done: "已通关", pref: "最被低估的", note: "规则即谜面。" },
+      { name: "奥布拉·丁号的归来", time: "时长未统计", done: "轻度游玩", pref: "它好小众我好爱", note: "观察、推理、信息拼图。" },
+      { name: "圣殿千秋", time: "时长未统计", done: "已通关", pref: "", note: "小说改编的选择节奏。" },
+      { name: "缘之空", time: "时长未统计", done: "已通关", pref: "", note: "视觉小说样本。" },
+      { name: "胡闹厨房", time: "时长未统计", done: "已通关", pref: "", note: "高压协作与职责分工。" },
+      { name: "鹅鸭杀", time: "9.7h", done: "轻度游玩", pref: "", note: "身份博弈与信息战。" },
+      { name: "雀魂麻将", time: "时长未统计", done: "长线消遣", pref: "消磨时间就玩", note: "概率、防守与局内决策。" },
+      { name: "Minecraft / 洛克王国", time: "时长未统计", done: "轻度游玩", pref: "", note: "沙盒与养成底色，非战斗主轴。" }
+    ]
+  }
+];
+
+const board = document.getElementById("board");
+const filters = document.getElementById("filters");
+let current = "all";
+
+function tagEl(text, cls) {
+  if (!text) return "";
+  return `<span class="tag ${cls || ""}">${text}</span>`;
+}
+
+function render() {
+  board.innerHTML = CATS.filter(c => current === "all" || c.id === current).map(cat => `
+    <section class="cat" id="${cat.id}">
+      <div class="cat-head">
+        <span class="idx">${cat.idx}</span>
+        <h2>${cat.title}</h2>
+        <span class="why">${cat.why}</span>
+      </div>
+      <div class="grid">
+        ${cat.games.map(g => `
+          <article class="card">
+            <h3>${g.name}</h3>
+            <div class="tags">
+              ${tagEl(g.time, "time")}
+              ${tagEl(g.done, "done")}
+              ${tagEl(g.pref, "pref")}
+            </div>
+            <p>${g.note}</p>
+          </article>
+        `).join("")}
+      </div>
+    </section>
+  `).join("");
+}
+
+const btns = [{ id: "all", label: "全部" }].concat(CATS.map(c => ({ id: c.id, label: c.idx + " " + c.title.split("·")[0].trim() })));
+filters.innerHTML = btns.map(b => `<button type="button" class="filter${b.id === "all" ? " on" : ""}" data-id="${b.id}">${b.label}</button>`).join("");
+filters.addEventListener("click", e => {
+  const btn = e.target.closest(".filter");
+  if (!btn) return;
+  current = btn.getAttribute("data-id");
+  [...filters.children].forEach(el => el.classList.toggle("on", el === btn));
+  render();
+});
+render();
+</script>
+</body>
+</html>

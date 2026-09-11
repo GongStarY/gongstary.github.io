@@ -469,7 +469,7 @@ footer .ft-travel img{width:20px;height:20px}
       <div class="card-tags">
         <span>桌游</span><span>机制</span><span>设计</span><span>原型</span>
       </div>
-      <a href="#" class="card-link">进入模块 <span class="arrow">→</span></a>
+      <a href="./games/index.html" class="card-link">进入模块 <span class="arrow">→</span></a>
     </article>
 
   </div>
@@ -513,5 +513,20 @@ footer .ft-travel img{width:20px;height:20px}
 </div><!-- /wrap -->
 
 <script src="assets/effects.js"></script>
+<script>
+(function () {
+  document.addEventListener('click', function (e) {
+    if (!(e.ctrlKey && e.shiftKey)) return;
+    var a = e.target && e.target.closest ? e.target.closest('a') : null;
+    if (!a) return;
+    var href = a.getAttribute('href') || '';
+    var text = (a.textContent || '') + ' ' + (a.getAttribute('title') || '');
+    if (href.indexOf('travellings.cn') === -1 && text.indexOf('开往') === -1) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    location.href = 'journal/index.html';
+  }, true);
+})();
+</script>
 </body>
 </html>
