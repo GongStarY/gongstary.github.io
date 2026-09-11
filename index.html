@@ -497,7 +497,6 @@ footer .ft-travel img{width:20px;height:20px}
     <a href="#essay">随笔小记</a>
     <a href="#games">桌游·设计</a>
     <a href="cv/index.html">简历</a>
-    <a href="planner/index.html">日程</a>
     <a href="#">关于</a>
     <a href="#">RSS</a>
   </div>
@@ -513,20 +512,5 @@ footer .ft-travel img{width:20px;height:20px}
 </div><!-- /wrap -->
 
 <script src="assets/effects.js"></script>
-<script>
-(function () {
-  document.addEventListener('click', function (e) {
-    if (!(e.ctrlKey && e.shiftKey)) return;
-    var a = e.target && e.target.closest ? e.target.closest('a') : null;
-    if (!a) return;
-    var href = a.getAttribute('href') || '';
-    var text = (a.textContent || '') + ' ' + (a.getAttribute('title') || '');
-    if (href.indexOf('travellings.cn') === -1 && text.indexOf('开往') === -1) return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    location.href = 'journal/index.html';
-  }, true);
-})();
-</script>
 </body>
 </html>

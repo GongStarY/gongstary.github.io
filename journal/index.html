@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="scifi">
+<html lang="zh-CN" data-theme="notion">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -220,7 +220,27 @@ html[data-theme="vista"] .navbar,html[data-theme="vista"] .nav-brand,html[data-t
 .h2 .ce{font-size:1.3rem;font-weight:700}
 .h3 .ce{font-size:1.12rem;font-weight:600}
 .check-row,.radio-row{display:flex;align-items:flex-start;gap:.55rem;width:100%}
-.check-row input,.radio-row input{margin-top:.45rem;accent-color:var(--accent);width:16px;height:16px}
+.check-row input[type="radio"],.radio-row input{margin-top:.45rem;accent-color:var(--accent);width:16px;height:16px}
+.todo-box{
+  flex:0 0 16px;width:16px;height:16px;margin-top:.45rem;padding:0;
+  border:1.6px solid var(--muted);border-radius:3px;background:transparent;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:#fff;
+}
+.todo-box:hover{border-color:var(--accent)}
+.todo-box.done{background:var(--accent);border-color:var(--accent)}
+.todo-box.done::after{content:'';width:8px;height:5px;border:solid #fff;border-width:0 0 2px 2px;transform:rotate(-45deg) translate(0,-1px)}
+.todo-box.skip{background:transparent;border-color:#d9730d;box-shadow:inset 0 0 0 1px rgba(217,115,13,.25)}
+.todo-box.skip::after{content:'';width:8px;height:2px;background:#d9730d;border-radius:1px}
+.check-row.done .ce{text-decoration:line-through;color:var(--muted)}
+.check-row.skip .ce{text-decoration:none;color:var(--ink)}
+.block.is-selected{background:var(--hover);border-radius:4px;box-shadow:inset 0 0 0 1px var(--accent)}
+.block.drop-before::before,.block.drop-after::after{
+  content:'';position:absolute;left:52px;right:8px;height:3px;border-radius:2px;
+  background:var(--accent);box-shadow:0 0 8px var(--accent);z-index:3;pointer-events:none;
+}
+.block.drop-before::before{top:-2px}
+.block.drop-after::after{bottom:-2px}
+.block.is-dragging{opacity:.35}
 .code-wrap{
   width:100%;background:var(--code-bg);border:1px solid var(--rule);border-radius:var(--ui-radius);padding:.55rem .7rem .7rem;
 }
@@ -339,7 +359,9 @@ html[data-theme="parchment"] a.nav-brand,html[data-theme="eyecare"] a.nav-brand,
   <div class="nav-actions">
     <span class="nav-status" id="sync-status">本地草稿</span>
     <button class="btn ghost" type="button" id="btn-export-md">导出 MD</button>
-    <button class="btn ghost" type="button" id="btn-export-html">导出 HTML</button>
+    <button class="btn ghost" type="button" id="btn-export-html-raw">原始 HTML</button>
+    <button class="btn ghost" type="button" id="btn-export-html-styled">样式 HTML</button>
+    <button class="btn ghost" type="button" id="btn-import">读取本地</button>
     <button class="btn" type="button" id="btn-save">保存到仓库</button>
   </div>
 </nav>
@@ -352,7 +374,7 @@ html[data-theme="parchment"] a.nav-brand,html[data-theme="eyecare"] a.nav-brand,
     </div>
     <input class="side-search" id="note-search" placeholder="搜索标题 / 作者">
     <div class="note-list" id="note-list"></div>
-    <div class="side-foot">Ctrl+Shift 点击首页「开往」可进入本页。正文写入 GitHub 仓库的 journal/notes，优先选更小的 Markdown。</div>
+    <div class="side-foot">电脑：Ctrl+Alt+点击首页「开往」。日程台：对左上角品牌按钮同样操作。读取本地可导入 .md / .html / .txt。</div>
   </aside>
 
   <main class="workspace">
@@ -407,6 +429,7 @@ html[data-theme="parchment"] a.nav-brand,html[data-theme="eyecare"] a.nav-brand,
   <button class="theme-toggle" type="button" id="theme-toggle" title="风格">风格</button>
 </div>
 <input class="hidden-file" id="img-file" type="file" accept="image/*">
+<input class="hidden-file" id="import-file" type="file" accept=".md,.html,.txt,text/markdown,text/html,text/plain">
 <div class="slash" id="slash" hidden></div>
 <div class="insert-menu" id="insert-menu" hidden></div>
 <div class="toast" id="toast"></div>
